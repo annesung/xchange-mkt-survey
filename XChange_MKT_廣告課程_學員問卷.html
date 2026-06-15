@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XChange 互聯網大學｜MKT組 廣告課程 - 學員問卷</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --ink:#1a1c2c;
+    --paper:#f7f4ec;
+    --card:#fffdf8;
+    --line:#e3ddcf;
+    --coral:#ff5a3c;
+    --coral-soft:#ffe2da;
+    --teal:#1f6f6b;
+    --teal-soft:#d4e8e6;
+    --gold:#e8a02d;
+    --plum:#6b4a8f;
+    --muted:#7a7568;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px 80px;}
+
+  /* ---- Hero ---- */
+  header.hero{
+    padding:72px 0 48px;
+    border-bottom:3px solid var(--ink);
+    margin-bottom:8px;
+    position:relative;
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:13px;font-weight:700;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--coral);
+    margin-bottom:20px;
+  }
+  .eyebrow::before{content:"";width:28px;height:2px;background:var(--coral);}
+  header.hero h1{
+    font-size:clamp(30px,5vw,52px);
+    font-weight:900;
+    letter-spacing:-.01em;
+    line-height:1.18;
+  }
+  header.hero h1 .accent{color:var(--coral);}
+  .subtitle{
+    margin-top:18px;font-size:16px;color:var(--muted);max-width:640px;
+  }
+  .stat-row{
+    display:flex;flex-wrap:wrap;gap:36px;margin-top:34px;
+  }
+  .stat-row .stat .n{font-size:34px;font-weight:900;line-height:1;}
+  .stat-row .stat .l{font-size:13px;color:var(--muted);margin-top:6px;}
+  .stat-row .stat .n.c{color:var(--coral);}
+  .stat-row .stat .n.t{color:var(--teal);}
+  .stat-row .stat .n.p{color:var(--plum);}
+
+  /* ---- Question block ---- */
+  .q{padding:54px 0;border-bottom:1px solid var(--line);}
+  .q-head{display:flex;gap:18px;align-items:baseline;margin-bottom:8px;}
+  .q-num{
+    font-size:14px;font-weight:900;color:var(--card);
+    background:var(--ink);border-radius:50%;
+    width:36px;height:36px;flex:0 0 36px;
+    display:flex;align-items:center;justify-content:center;
+    transform:translateY(2px);
+  }
+  .q-title{font-size:clamp(20px,3vw,26px);font-weight:800;letter-spacing:-.005em;}
+  .q-meta{font-size:13px;color:var(--muted);margin-left:54px;margin-bottom:24px;}
+  .q-body{margin-left:54px;}
+  @media(max-width:640px){
+    .q-meta,.q-body{margin-left:0;}
+    .q-head{gap:12px;}
+  }
+
+  /* ---- Chart canvas ---- */
+  .chart-box{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:24px;position:relative;
+  }
+  .chart-box.tall{height:340px;}
+  .chart-box.short{height:300px;}
+
+  /* ---- single-value highlight (AI freq) ---- */
+  .single-hero{
+    background:var(--teal);color:#fff;border-radius:14px;
+    padding:40px;display:flex;align-items:center;gap:30px;flex-wrap:wrap;
+  }
+  .single-hero .big{font-size:64px;font-weight:900;line-height:.9;}
+  .single-hero .txt h3{font-size:22px;font-weight:800;margin-bottom:6px;}
+  .single-hero .txt p{font-size:15px;opacity:.85;max-width:420px;}
+
+  /* ---- list answers ---- */
+  .ans-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+  .ans{
+    background:var(--card);border:1px solid var(--line);
+    border-left:4px solid var(--coral);
+    border-radius:10px;padding:16px 18px;font-size:15px;
+  }
+  .ans.t{border-left-color:var(--teal);}
+  .ans.g{border-left-color:var(--gold);}
+  .ans.p{border-left-color:var(--plum);}
+
+  /* dept tag list */
+  .tag-wrap{display:flex;flex-wrap:wrap;gap:10px;}
+  .tag{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:999px;padding:8px 16px;font-size:14px;font-weight:600;
+  }
+  .tag .grp{color:var(--muted);font-weight:400;font-size:12px;margin-left:6px;}
+
+  /* long-form question cards */
+  .qcard{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:20px 22px;margin-bottom:14px;
+  }
+  .qcard .who{
+    font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--coral);margin-bottom:10px;
+  }
+  .qcard p{font-size:14.5px;margin-bottom:8px;}
+  .qcard p:last-child{margin-bottom:0;}
+  .qcard ol{margin:4px 0 0 20px;}
+  .qcard ol li{font-size:14.5px;margin-bottom:6px;}
+
+  footer{padding:46px 0 0;color:var(--muted);font-size:13px;text-align:center;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <span class="eyebrow">XChange 互聯網大學 · MKT 組</span>
+    <h1>廣告課程<br><span class="accent">學員問卷</span>結果一覽</h1>
+    <p class="subtitle">課前蒐集學員背景、好奇的領域、AI 使用習慣，以及想向講師提出的問題，做為課程設計依據。</p>
+    <div class="stat-row">
+      <div class="stat"><div class="n c">16</div><div class="l">填答人數</div></div>
+      <div class="stat"><div class="n t">100%</div><div class="l">每天使用 AI</div></div>
+      <div class="stat"><div class="n p">9</div><div class="l">問卷題目</div></div>
+    </div>
+  </header>
+
+  <!-- Q1 -->
+  <section class="q">
+    <div class="q-head"><div class="q-num">1</div><div class="q-title">您目前幾年級？</div></div>
+    <div class="q-meta">單選 · 大三為主要族群</div>
+    <div class="q-body">
+      <div class="chart-box short"><canvas id="c1"></canvas></div>
+    </div>
+  </section>
+
+  <!-- Q2 -->
+  <section class="q">
+    <div class="q-head"><div class="q-num">2</div><div class="q-title">您目前就讀的科系所屬類別？</div></div>
+    <div class="q-meta">單選 · 管理學群占多數</div>
+    <div class="q-body">
+      <div class="chart-box short"><canvas id="c2"></canvas></div>
+    </div>
+  </section>
+
+  <!-- Q3 -->
+  <section class="q">
+    <div class="q-head"><div class="q-num">3</div><div class="q-title">您目前就讀的「科系名稱」？</div></div>
+    <div class="q-meta">開放填答 · 16 位學員的就讀科系</div>
+    <div class="q-body">
+      <div class="tag-wrap">
+        <span class="tag">行銷管理<span class="grp">管理</span></span>
+        <span class="tag">國際商務系<span class="grp">管理</span></span>
+        <span class="tag">東南亞語系<span class="grp">外語</span></span>
+        <span class="tag">會計學系<span class="grp">管理</span></span>
+        <span class="tag">資訊科學系<span class="grp">資訊</span></span>
+        <span class="tag">企業管理學系<span class="grp">管理</span></span>
+        <span class="tag">數位學習與教育<span class="grp">社會心理</span></span>
+        <span class="tag">企業管理學系<span class="grp">管理</span></span>
+        <span class="tag">歷史學系<span class="grp">文史哲</span></span>
+        <span class="tag">企業管理學系<span class="grp">管理</span></span>
+        <span class="tag">GBBA<span class="grp">管理</span></span>
+        <span class="tag">社會工作學系<span class="grp">社會心理</span></span>
+        <span class="tag">國際商務系<span class="grp">管理</span></span>
+        <span class="tag">國際貿易與經營學系<span class="grp">管理</span></span>
+        <span class="tag">行銷與數位分析學系<span class="grp">管理</span></span>
+        <span class="tag">學習與媒材設計學系<span class="grp">教育</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q4 -->
+  <section class="q">
+    <div class="q-head"><div class="q-num">4</div><div class="q-title">您對廣告／行銷產業最好奇的是哪個環節？</div></div>
+    <div class="q-meta">單選（部分複選）· 「策略推導」與「創意發想」並列第一</div>
+    <div class="q-body">
+      <div class="chart-box short"><canvas id="c4"></canvas></div>
+    </div>
+  </section>
+
+  <!-- Q5 -->
+  <section class="q">
+    <div class="q-head"><div class="q-num">5</div><div class="q-title">您認為「廣告代理商工作」最需要的能力是？</div></div>
+    <div class="q-meta">開放填答 · 多數聚焦在「洞察轉化」與「溝通協調」</div>
+    <div class="q-body">
+      <div class="ans-grid">
+        <div class="ans">將生活中的觀察轉化為可執行策略的能力，並清楚表達背後邏輯。</div>
+        <div class="ans t">溝通（獲得代理權）＋ 觀察力（判斷市場需要或想要什麼）。</div>
+        <div class="ans">釐清客戶的需求，並在有限的資源與時間限制下實現。</div>
+        <div class="ans g">客戶溝通、創意發想。</div>
+        <div class="ans t">在創意、業務、客戶三方利益間找出最大公約數的協調能力；把抽象洞察轉譯成可執行方案。</div>
+        <div class="ans">將觀察轉換為洞察，再把洞察轉換為策略力。</div>
+        <div class="ans p">具備一條龍的思維，確保專案順利執行。</div>
+        <div class="ans g">溝通力、與時俱進的能力、能持續收穫新知的心態。</div>
+        <div class="ans">洞悉客群痛點，並在預算範圍內將創意確實落地。</div>
+        <div class="ans p">天馬行空的想像力！</div>
+        <div class="ans">洞察業主看不到的盲點，補足視角的落差。</div>
+        <div class="ans g">創意發想、人際溝通。</div>
+        <div class="ans t">將瑣碎日常洞察轉化為商業解題的跨界轉譯力，精準拉出策略牽引線。</div>
+        <div class="ans p">「精準」。</div>
+        <div class="ans t">理解客戶需求，以及強大的溝通能力。</div>
+        <div class="ans g">與甲方溝通協調、提案執行能力。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q6 -->
+  <section class="q">
+    <div class="q-head"><div class="q-num">6</div><div class="q-title">對於此堂課程想了解的內容？</div></div>
+    <div class="q-meta">開放填答 · 學員最想看「洞察 → 策略 → 創意」的真實推導過程</div>
+    <div class="q-body">
+      <div class="qcard"><div class="who">學員 A</div><p>如何從零散的使用者洞察，提煉出有商業價值且可執行的廣告核心概念？策略與創意之間如何銜接？</p></div>
+      <div class="qcard"><div class="who">學員 B</div><p>如何培養創意與策略能力？在行銷業工作中如何兼顧兩者？</p></div>
+      <div class="qcard"><div class="who">學員 C</div>
+        <ol>
+          <li>進入廣告業需要哪些人格特質比較適合生存？有哪些反向指標代表自己其實不適合？</li>
+          <li>以大型 Campaign（如 Uber）從 Brief 到上線的完整流程，各部門核心任務與注意事項？</li>
+          <li>職位上最常面臨的真實挑戰與崩潰點？團隊如何應對突發狀況？（想聽案例）</li>
+        </ol>
+      </div>
+      <div class="qcard"><div class="who">學員 D</div>
+        <ol>
+          <li>講師有豐富經驗，這個產業有什麼吸引力讓您願意持續任職？</li>
+          <li>想了解您一天的工作日常包含哪些內容？</li>
+        </ol>
+      </div>
+      <div class="qcard"><div class="who">學員 E</div><p>一個案子從 brief 進來到上線，策略端真正花時間在哪裡？「動力火車」這個切角如何從一堆 cultural insight 中被挑出來，有沒有其他被否決的方向、基於什麼判斷砍掉？想看策略推導的「現場」，而非事後包裝的成功故事。</p></div>
+      <div class="qcard"><div class="who">學員 F</div>
+        <p>★ 行銷產業的整體生態圈與上下游關係如何運作？</p>
+        <p>★ 真實廣告案例的完整流程？各部門如何協作？</p>
+        <p>★ 消費者洞察如何轉化成策略方向，再發展成創意執行？</p>
+      </div>
+      <div class="qcard"><div class="who">學員 G</div><p>對於廣告創意跟成本中如何權衡。</p></div>
+      <div class="qcard"><div class="who">學員 H</div><p>如何用一個創意貫穿整個行銷比較好，或是多個同類型創意整合一整個行銷活動比較好？有例子說明嗎？</p></div>
+      <div class="qcard"><div class="who">學員 I</div><p>視覺概念到策略規劃間的建立通常會遇到什麼困難？在預算考量上，創意的落地如何取捨？</p></div>
+      <div class="qcard"><div class="who">學員 J</div>
+        <p>沒有廣告公司經驗的新鮮人想進創意／企劃，您最希望在作品集裡看到什麼？</p>
+        <p>創意團隊想不出好點子時，業界通常怎麼突破？靠資料研究、團隊討論，還是有固定方法論？</p>
+      </div>
+      <div class="qcard"><div class="who">學員 K</div><p>若廣告目標是 awareness，成效是否只看曝光、觸及、觀看率？當廣告沒有直接帶來轉換或營收時，如何判斷成功？品牌廣告效果又該如何歸因到後續商業成果？</p></div>
+      <div class="qcard"><div class="who">學員 L</div><p>想了解該領域的職涯路徑大概是如何。</p></div>
+      <div class="qcard"><div class="who">學員 M</div>
+        <ol>
+          <li>「Uber × 動力火車」案例中，如何從日常流行文化篩選、淬鍊出最精準的在地洞察，並轉化為創意團隊能發揮的策略 brief？</li>
+          <li>面對 AI 普及，未來策略／廣告人最不可替代的核心特質是什麼？在學期間可透過什麼實務練習提早培養？</li>
+        </ol>
+      </div>
+      <div class="qcard"><div class="who">學員 N</div><p>廣告轉換到消費者「行為」的過程？想進廣告圈最重要的特質或能力是什麼？</p></div>
+      <div class="qcard"><div class="who">學員 O</div>
+        <p>AI 時代的來臨，對廣告代理工作帶來什麼樣的轉變？</p>
+        <p>發想創意遇到瓶頸時，通常會怎麼做？會去什麼管道蒐集想法？</p>
+      </div>
+      <div class="qcard"><div class="who">學員 P</div><p>為何當初會選擇投入廣告事業，是否有什麼契機？</p></div>
+    </div>
+  </section>
+
+  <!-- Q7 -->
+  <section class="q">
+    <div class="q-head"><div class="q-num">7</div><div class="q-title">您目前使用 AI 工具的頻率大概是？</div></div>
+    <div class="q-meta">單選 · 結果高度一致</div>
+    <div class="q-body">
+      <div class="single-hero">
+        <div class="big">16/16</div>
+        <div class="txt">
+          <h3>幾乎每天用</h3>
+          <p>全體填答學員都選擇「幾乎每天用」AI 工具，顯示 AI 已是這群行銷新世代的日常工作配備。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q8 -->
+  <section class="q">
+    <div class="q-head"><div class="q-num">8</div><div class="q-title">您通常拿 AI 來做什麼？</div></div>
+    <div class="q-meta">可複選 · 「找資料、整理重點」最普遍</div>
+    <div class="q-body">
+      <div class="chart-box short"><canvas id="c8"></canvas></div>
+    </div>
+  </section>
+
+  <!-- Q9 -->
+  <section class="q">
+    <div class="q-head"><div class="q-num">9</div><div class="q-title">其他想問的問題</div></div>
+    <div class="q-meta">開放填答 · 多圍繞「AI 時代下『人』的價值」與講師個人職涯</div>
+    <div class="q-body">
+      <div class="qcard"><div class="who">學員 A</div><p>AI 讓產出內容變容易，廣告代理商中「人」真正的價值落在哪裡？是洞察、策略判斷，還是創意差異？學生階段該優先培養哪一塊？</p></div>
+      <div class="qcard"><div class="who">學員 C</div>
+        <p>定策略時，創意應盡量「可被預測／有數據支撐」，還是要保留不可預測的驚喜感？當團隊丟出風險很高的創意時，策略端如何同步規劃 Plan B？</p>
+        <p>講師待過奧美、BBDO、電通、李奧貝納，也經歷藝術指導與策略兩種角色——這些工作最迷人的地方是什麼？是什麼讓您保持熱情？</p>
+        <p>剛入行新人常迷惘於「不知道自己最適合哪一塊」，頭一兩年您是如何嘗試？會給新人什麼建議？</p>
+      </div>
+      <div class="qcard"><div class="who">學員 E</div>
+        <p>怎麼判斷一個 idea 是不是「好」的？理工世界對錯有標準答案，但創意好壞似乎沒有，資深策略人用什麼判準評估與決策？</p>
+        <p>講師職涯橫跨 Dentsu、BBDO、Ogilvy、Leo Burnett 四家國際代理商，選擇下一份工作時最看重什麼？台灣廣告代理商現在最大的結構性挑戰是什麼？</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    XChange 互聯網大學 ｜ MKT 組 廣告課程 · 學員問卷彙整（共 16 份回覆，姓名不公開）
+  </footer>
+
+</div>
+
+<script>
+const ink="#1a1c2c", coral="#ff5a3c", teal="#1f6f6b", gold="#e8a02d", plum="#6b4a8f", muted="#7a7568";
+Chart.defaults.font.family = '"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif';
+Chart.defaults.color = ink;
+const noLegend = {legend:{display:false}};
+
+// Q1 年級
+new Chart(document.getElementById('c1'),{
+  type:'bar',
+  data:{labels:['大學三年級','大學二年級','研究所二年級','大學四年級','研究所一年級'],
+    datasets:[{data:[9,2,2,2,1],backgroundColor:[coral,'#ff8a73','#ff8a73','#ff8a73','#ffb3a4'],borderRadius:6}]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    plugins:noLegend,
+    scales:{x:{beginAtZero:true,ticks:{stepSize:2},grid:{color:'#ece6d8'}},y:{grid:{display:false}}}}
+});
+
+// Q2 科系類別
+new Chart(document.getElementById('c2'),{
+  type:'doughnut',
+  data:{labels:['管理學群','社會與心理學群','外語學群','資訊學群','文史哲學群','教育學群'],
+    datasets:[{data:[10,2,1,1,1,1],backgroundColor:[teal,coral,gold,plum,'#4a9d98','#c98b3a'],borderColor:'#fffdf8',borderWidth:3}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'58%',
+    plugins:{legend:{position:'right',labels:{boxWidth:14,padding:12,font:{size:13}}}}}
+});
+
+// Q4 好奇環節
+new Chart(document.getElementById('c4'),{
+  type:'bar',
+  data:{labels:['策略怎麼推導','創意怎麼來的','實習／求職怎麼準備'],
+    datasets:[{data:[7,7,3],backgroundColor:[teal,coral,gold],borderRadius:6}]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:noLegend,
+    scales:{y:{beginAtZero:true,ticks:{stepSize:1},grid:{color:'#ece6d8'}},x:{grid:{display:false}}}}
+});
+
+// Q8 AI 用途
+new Chart(document.getElementById('c8'),{
+  type:'bar',
+  data:{labels:['找資料、整理重點','寫作、潤稿','發想創意或靈感','做簡報 / 視覺'],
+    datasets:[{data:[15,13,11,5],backgroundColor:[teal,'#2a8682','#3a9d98','#7bbab6'],borderRadius:6}]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    plugins:{...noLegend,tooltip:{callbacks:{label:(c)=>c.parsed.x+' 人（共 16 人）'}}},
+    scales:{x:{beginAtZero:true,max:16,ticks:{stepSize:3},grid:{color:'#ece6d8'}},y:{grid:{display:false}}}}
+});
+</script>
+</body>
+</html>
